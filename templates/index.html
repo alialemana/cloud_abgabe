@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>FlaskBlog</title>
+</head>
+<body>
+    <h1>Welcome to the image recognition website</h1>
+    <form method="POST" enctype="multipart/form-data" action="/upload">
+        <div class="container">
+          <div class="input-container">
+            <label id="image-label"for="image-input">Bild auswählen</label>
+            <input id="image-input" type="file" accept="image/*" name="image-input" style="display: none;"></input>
+            <div id="image-preview" style="width: 200px; height: 200px; border: 1px solid black;"></div>
+          </div>
+          <div class="submit-container">
+            <input type="submit" value="erkennen">
+          </div>
+          <div class="output-container">
+            <label for="output">Erkannte Objekte:</label>
+            <div id="output" name="output" contenteditable>{{ output|safe }}</div>
+          </div>
+        </div>
+    </form>
+
+    <script>
+        const input_file = document.getElementById('image-input');
+        const input_label = document.getElementById('image-label');
+        const input_preview = document.getElementById('image-preview');
+
+
+        const convert_to_base64 = file => new Promise((response) => {
+        const file_reader = new FileReader();
+        file_reader.readAsDataURL(file);
+        file_reader.onload = () => response(file_reader.result);
+        });
+
+        input_file.addEventListener('change', async function(){
+        const file = document.querySelector('#image-input').files;
+        const my_image = await convert_to_base64(file[0]);
+        input_preview.style.backgroundImage =`url(${my_image})`;
+        })
+
+    </script>
+</body>
+</html>
