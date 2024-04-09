@@ -1,1 +1,6 @@
 .env
+*.toml
+*.json
+*.lock
+*.tf
+*.tfstate.*
