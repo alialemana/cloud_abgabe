@@ -1,22 +1,23 @@
 # Verwende ein Python 3.11-Image als Basis
 FROM python:3.11-slim
 
+# Erstelle einen Ordner /app
+RUN mkdir /app
+
 # Setze das Arbeitsverzeichnis im Container
 WORKDIR /app
 
-# Kopiere die pyproject.toml- und poetry.lock-Dateien in das Arbeitsverzeichnis
-COPY pyproject.toml poetry.lock googlekey.json /app/
+COPY templates /app/templates
 
-# Installiere Poetry
-RUN pip install poetry
-
-# Installiere die Abhängigkeiten
-RUN poetry install --no-root
-
-RUN gcloud auth activate-service-account --key-file=./googlekey.json
+COPY static /app/static
 
 # Kopiere die restlichen Dateien in das Arbeitsverzeichnis
-COPY app.py ./static/* ./templates/* .env /app/
+COPY key.json app.py .env requirements.txt /app/
+
+RUN pip install -r requirements.txt
+
+# Setze google-auth
+ENV  GOOGLE_APPLICATION_CREDENTIALS=/app/key.json
 
 # Setze die Umgebungsvariable für den Flask-Server
 ENV FLASK_APP=app.py
@@ -25,5 +26,5 @@ ENV FLASK_APP=app.py
 EXPOSE 5000
 
 # Starte den Flask-Server beim Starten des Containers
-CMD ["poetry", "run", "flask", "run", "--host=0.0.0.0", "--port=5000"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
 
