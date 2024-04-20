@@ -3,8 +3,9 @@
 *.json
 *.lock
 *.tf
-env.yaml
-terraform.tfstate
-node.inventory.ini
+*env*
+node_inventory.ini
 abgaben_playbook.yaml
 __pycache__*
+*terraform*
+*playbook*

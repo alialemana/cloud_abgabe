@@ -12,12 +12,9 @@ COPY templates /app/templates
 COPY static /app/static
 
 # Kopiere die restlichen Dateien in das Arbeitsverzeichnis
-COPY key.json app.py .env requirements.txt /app/
+COPY app.py requirements.txt /app/
 
 RUN pip install -r requirements.txt
-
-# Setze google-auth
-ENV  GOOGLE_APPLICATION_CREDENTIALS=/app/key.json
 
 # Setze die Umgebungsvariable für den Flask-Server
 ENV FLASK_APP=app.py
