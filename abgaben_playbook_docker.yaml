@@ -1,0 +1,80 @@
+---
+- name: Setup environment for Flask App
+  hosts: remote-hosts
+  become: yes
+  vars:
+    default_container_image: alialemana/abgabe
+    default_container_name: docker
+    default_container_command: run
+
+  tasks:
+    - name: Install required packages
+      apt:
+        pkg: 
+          - git
+          - python3-pip
+          - python3-venv
+          - ca-certificates
+          - curl
+          - python3-setuptools
+        update_cache: yes
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+    - name: Load environment variables from .env file
+      ansible.builtin.include_vars:
+        file: env.yaml
+
+    - name: Clone Git repository
+      git:
+        repo: "https://{{ GITHUB_USERNAME }}:{{ GITHUB_TOKEN }}@github.com/alialemana/cloud_abgabe.git"
+        dest: /abgabe
+
+    - name: Manually create the initial virtualenv
+      command:
+        cmd: python3 -m venv /abgabe/myenv 
+        creates: "/abgabe/myenv"
+
+    - name: Install requirements
+      pip: 
+        name: docker
+        virtualenv: /abgabe/myenv
+
+    - name: build container image
+      docker_image:
+        name: flaskapp
+        build:
+          path: /abgabe
+        state: present
+      vars:
+        ansible_python_interpreter: /abgabe/myenv/bin/python
+
+    - name: Create a data container
+      docker_container:
+        name: docker
+        image: flaskapp
+        ports:
+        - 5000:5000
+        env:
+          AUTH_TOKEN: "{{ AUTH_TOKEN }}"
+          PROJECT_ID: "{{ PROJECT_ID }}"
+      vars:
+        ansible_python_interpreter: /abgabe/myenv/bin/python
+
+
+
+

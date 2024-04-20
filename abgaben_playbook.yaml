@@ -1,0 +1,44 @@
+---
+- name: Setup environment for Flask App
+  hosts: remote-hosts
+  become: yes
+
+  tasks:
+    - name: Install git
+      apt:
+        name: git
+        update_cache: yes
+
+    - name: Install python3-pip
+      apt:
+        name: python3-pip
+        update_cache: yes
+
+    - name: Install python3-venv
+      apt:
+        name: python3-venv
+        update_cache: yes
+
+    - name: Load environment variables from .env file
+      ansible.builtin.include_vars:
+        file: env.yaml
+
+    - name: Clone Git repository
+      git:
+        repo: "https://{{ GITHUB_USERNAME }}:{{ GITHUB_TOKEN }}@github.com/alialemana/cloud_abgabe.git"
+        dest: /abgabe
+
+    - name: Manually create the initial virtualenv
+      command:
+        cmd: python3 -m venv /abgabe/myenv 
+        creates: "/abgabe/myenv"
+
+    - name: Install requirements
+      pip: 
+        requirements: /abgabe/requirements.txt
+        virtualenv: /abgabe/myenv
+    
+    - name: Run Python script
+      command: "/abgabe/myenv/bin/python /abgabe/app.py"
+
+
