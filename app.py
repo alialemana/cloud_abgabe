@@ -7,9 +7,8 @@ from google.cloud import firestore
 
 # Lese AUTH_TOKEN und PROJECT_ID aus Umgebungsvariablen
 AUTH_TOKEN = os.getenv('AUTH_TOKEN')
-print("token", AUTH_TOKEN)
 PROJECT_ID = os.getenv('PROJECT_ID')
-print("projectid", PROJECT_ID)
+
 app = Flask(__name__, static_folder='static')
 
 db = firestore.Client()
@@ -28,9 +27,6 @@ def save_to_database(hash_value, api_response):
         'api_response': api_response
     })
 
-# TODO: db connection
-def get_db_connection():
-    pass
 
 @app.route('/')
 def index():
