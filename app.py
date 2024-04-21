@@ -11,7 +11,7 @@ PROJECT_ID = os.getenv('PROJECT_ID')
 
 app = Flask(__name__, static_folder='static')
 
-database = "firestoredatabase"
+database = "firestoredb"
 db = firestore.Client(database=database)
 
 def calculate_image_hash(image):

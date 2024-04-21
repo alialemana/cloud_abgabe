@@ -108,7 +108,7 @@ resource "google_project_iam_binding" "firestore_binding" {
 
 resource "google_firestore_database" "database" {
   project     = var.project
-  name        = "firestoredatabase"
+  name        = "firestoredb"
   location_id = "eur3"
   type        = "FIRESTORE_NATIVE"
 
