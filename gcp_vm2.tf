@@ -83,3 +83,38 @@ output "ip" {
   value = google_compute_instance.gcp-vm-abgabe.network_interface.0.network_ip
 }
 
+
+resource "google_project_service" "firestore" {
+  project = var.project
+  service = "firestore.googleapis.com"
+
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "iam" {
+  project = var.project
+  service = "iam.googleapis.com"
+}
+
+resource "google_project_iam_binding" "firestore_binding" {
+  project = var.project
+  role    = "roles/datastore.user"
+
+  members = [
+    "serviceAccount:521450885800-compute@developer.gserviceaccount.com"
+  ]
+  depends_on = [google_project_service.iam]
+}
+
+resource "google_firestore_database" "database" {
+  project     = var.project
+  name        = "firestoredatabase"
+  location_id = "eur3"
+  type        = "FIRESTORE_NATIVE"
+
+  depends_on = [
+    google_project_service.firestore,
+    google_project_iam_binding.firestore_binding
+    ]
+}
+

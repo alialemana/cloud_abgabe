@@ -23,6 +23,7 @@ def check_hash_in_database(hash_value):
     return existing_hash.get().exists
 
 def save_to_database(hash_value, api_response):
+    print("saved in db")
     db.collection('images').document(hash_value).set({
         'api_response': api_response
     })
@@ -45,6 +46,7 @@ def upload():
 
     if check_hash_in_database(image_hash):
         description = db.collection('images').document(image_hash).get().to_dict()['api_response']
+        print("from database")
         return render_template('index.html', output=description)
     
     else:
