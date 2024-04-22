@@ -1,8 +1,8 @@
 *.toml
 *.json
 *.lock*
-*env*
+env*
 node_inventory.ini
 __pycache__*
 *.tfstate*
-*.tfvars
+variables.tfvars
